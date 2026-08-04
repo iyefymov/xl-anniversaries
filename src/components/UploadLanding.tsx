@@ -27,10 +27,10 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           ].join(' ')}
         >
           <span className="font-serif text-2xl font-semibold text-ink">
-            Upload input.xlsx
+            Upload employee export
           </span>
           <span className="text-sm text-slate-mist">
-            Accepts .xlsx with Employee Reporting Name, Service Date, and
+            Any .xlsx file with Employee Reporting Name, Service Date, and
             Manager Name columns.
           </span>
           <span className="mt-2 inline-flex items-center bg-teal px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-deep">
