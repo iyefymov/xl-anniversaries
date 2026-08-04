@@ -8,9 +8,7 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col justify-center px-6 py-16 sm:px-10">
       <div className="animate-fade-up">
-        <p className="mb-3 text-sm font-medium tracking-[0.14em] text-teal uppercase">
-          Internal HR
-        </p>
+        <p className="eyebrow mb-3">Internal HR</p>
         <h1 className="font-serif text-5xl leading-[1.05] font-semibold text-ink sm:text-6xl">
           Work Anniversaries
         </h1>
@@ -19,13 +17,7 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           by anniversary month.
         </p>
 
-        <label
-          className={[
-            'mt-10 flex cursor-pointer flex-col items-start gap-3 border border-dashed border-slate-mist/40 bg-white/70 px-6 py-8 backdrop-blur-sm transition',
-            'hover:border-teal hover:bg-teal-soft/40',
-            busy ? 'pointer-events-none opacity-70' : '',
-          ].join(' ')}
-        >
+        <label className="upload-dropzone" data-busy={busy || undefined}>
           <span className="font-serif text-2xl font-semibold text-ink">
             Upload employee export
           </span>
@@ -58,7 +50,7 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           </p>
         ) : null}
 
-        <p className="mt-8 max-w-xl text-sm leading-relaxed text-slate-mist">
+        <p className="privacy-note mt-8 max-w-xl">
           Processed entirely in your browser; nothing is uploaded to a server.
         </p>
       </div>

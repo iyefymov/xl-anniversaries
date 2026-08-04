@@ -1,12 +1,17 @@
 export type EmployeeRow = {
   employeeName: string
+  /** Original hire / service date from the export. */
   serviceDate: Date
   managerName: string
 }
 
+/**
+ * One person after anniversary math.
+ * `serviceDate` is the hire date (month/day of their annual anniversary).
+ */
 export type Anniversary = {
   employeeName: string
-  anniversaryDate: Date
+  serviceDate: Date
   managerName: string
   upcomingYearsOfService: number
   anniversaryMonth: string
@@ -40,7 +45,11 @@ export function startOfLocalDay(date: Date): Date {
 }
 
 /** Build a date on month/day in year; Feb 29 → Feb 28 in non-leap years. */
-export function dateOnMonthDay(year: number, monthIndex: number, day: number): Date {
+export function dateOnMonthDay(
+  year: number,
+  monthIndex: number,
+  day: number,
+): Date {
   if (monthIndex === 1 && day === 29) {
     const leap = new Date(year, 1, 29)
     if (leap.getMonth() !== 1) {
@@ -51,27 +60,27 @@ export function dateOnMonthDay(year: number, monthIndex: number, day: number): D
 }
 
 /**
- * Next anniversary on or after `asOf` (local calendar day).
- * Years = anniversaryYear - serviceYear.
+ * Full years of service on the next anniversary on or after `asOf`.
+ * Years = anniversaryYear − serviceYear.
  */
 export function upcomingYearsOfService(serviceDate: Date, asOf: Date): number {
   const today = startOfLocalDay(asOf)
   const month = serviceDate.getMonth()
   const day = serviceDate.getDate()
 
-  let anniversary = dateOnMonthDay(today.getFullYear(), month, day)
-  if (anniversary < today) {
-    anniversary = dateOnMonthDay(today.getFullYear() + 1, month, day)
+  let nextAnniversary = dateOnMonthDay(today.getFullYear(), month, day)
+  if (nextAnniversary < today) {
+    nextAnniversary = dateOnMonthDay(today.getFullYear() + 1, month, day)
   }
 
-  return anniversary.getFullYear() - serviceDate.getFullYear()
+  return nextAnniversary.getFullYear() - serviceDate.getFullYear()
 }
 
 export function toAnniversary(row: EmployeeRow, asOf: Date): Anniversary {
   const monthIndex = row.serviceDate.getMonth()
   return {
     employeeName: row.employeeName,
-    anniversaryDate: row.serviceDate,
+    serviceDate: row.serviceDate,
     managerName: row.managerName,
     upcomingYearsOfService: upcomingYearsOfService(row.serviceDate, asOf),
     anniversaryMonth: MONTH_NAMES[monthIndex],
@@ -104,7 +113,7 @@ export function groupByRollingMonths(
   return order.map((monthIndex) => {
     const month = MONTH_NAMES[monthIndex]
     const inMonth = anniversaries
-      .filter((a) => a.anniversaryDate.getMonth() === monthIndex)
+      .filter((a) => a.serviceDate.getMonth() === monthIndex)
       .sort(compareAnniversaries)
 
     return {
@@ -116,7 +125,8 @@ export function groupByRollingMonths(
   })
 }
 
-export function formatAnniversaryDate(date: Date): string {
+/** Display format for service/anniversary dates (e.g. Sep 8, 2025). */
+export function formatServiceDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

@@ -1,7 +1,4 @@
-import {
-  formatReferenceDate,
-  type MonthGroup,
-} from '../lib/anniversaries'
+import { formatReferenceDate, type MonthGroup } from '../lib/anniversaries'
 import { MonthAccordion } from './MonthAccordion'
 
 type ResultsViewProps = {
@@ -22,9 +19,7 @@ export function ResultsView({
       <div className="animate-fade-up">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-paper-deep pb-8">
           <div>
-            <p className="mb-2 text-sm font-medium tracking-[0.14em] text-teal uppercase">
-              Work Anniversaries
-            </p>
+            <p className="eyebrow">Work Anniversaries</p>
             <h1 className="font-serif text-4xl font-semibold text-ink sm:text-5xl">
               Upcoming service years
             </h1>
@@ -46,7 +41,7 @@ export function ResultsView({
           <MonthAccordion groups={groups} />
         </div>
 
-        <p className="mt-10 text-sm text-slate-mist">
+        <p className="privacy-note mt-10">
           Processed entirely in your browser; nothing is uploaded to a server.
         </p>
       </div>

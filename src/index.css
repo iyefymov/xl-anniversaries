@@ -67,3 +67,44 @@
 .animate-accordion-in {
   animation: accordion-in 0.28s ease-out both;
 }
+
+/* Shared layout helpers (keep JSX free of long repeated class strings) */
+.eyebrow {
+  @apply mb-2 text-sm font-medium tracking-[0.14em] text-teal uppercase;
+}
+
+.person-grid {
+  @apply grid gap-1 px-1 py-3 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto] sm:items-baseline sm:gap-4;
+}
+
+.person-grid-header {
+  @apply mb-1 hidden gap-4 px-1 text-xs tracking-[0.08em] text-slate-mist uppercase sm:grid sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1.2fr)_auto];
+}
+
+.upload-dropzone {
+  @apply mt-10 flex cursor-pointer flex-col items-start gap-3 border border-dashed border-slate-mist/40 bg-white/70 px-6 py-8 backdrop-blur-sm transition hover:border-teal hover:bg-teal-soft/40;
+}
+
+.upload-dropzone[data-busy='true'] {
+  @apply pointer-events-none opacity-70;
+}
+
+.month-panel {
+  @apply border border-transparent bg-white/45 transition;
+}
+
+.month-panel[data-current='true'] {
+  @apply border-teal/30 bg-white/90 shadow-sm;
+}
+
+.month-count {
+  @apply inline-flex min-w-8 items-center justify-center px-2 py-0.5 text-sm font-semibold tabular-nums bg-paper-deep text-ink-soft;
+}
+
+.month-count[data-current='true'] {
+  @apply bg-teal text-white;
+}
+
+.privacy-note {
+  @apply text-sm leading-relaxed text-slate-mist;
+}

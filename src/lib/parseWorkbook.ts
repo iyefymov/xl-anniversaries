@@ -18,6 +18,10 @@ const FIELD_ALIASES: Record<keyof EmployeeRow, string[]> = {
   managerName: ['manager name', 'manager'],
 }
 
+const ISO_DATE =
+  /^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/
+const NUMERIC_STRING = /^\d+(\.\d+)?$/
+
 function normalizeHeader(value: unknown): string {
   return String(value ?? '')
     .trim()
@@ -25,59 +29,72 @@ function normalizeHeader(value: unknown): string {
     .replace(/\s+/g, ' ')
 }
 
+/** Drop time-of-day; keep Y/M/D as a local calendar date. */
+function toLocalCalendarDate(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+/**
+ * Excel stores dates as day counts since 1899-12-30.
+ * Convert serial → local calendar date (UTC components → local Y/M/D).
+ */
 function excelSerialToDate(serial: number): Date | null {
   if (!Number.isFinite(serial)) return null
-  // Excel epoch 1899-12-30 (accounts for the 1900 leap-year bug window)
   const utc = Date.UTC(1899, 11, 30) + Math.round(serial) * 86400000
   const d = new Date(utc)
-  // Convert to local calendar date (avoid timezone shifting the day)
   return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
 }
 
+/** Parse YYYY-MM-DD as a local calendar date (avoids UTC midnight shifts). */
+function parseIsoDateString(value: string): Date | null {
+  const match = value.match(ISO_DATE)
+  if (!match) return null
+
+  const year = Number(match[1])
+  const month = Number(match[2]) - 1
+  const day = Number(match[3])
+  const local = new Date(year, month, day)
+
+  const valid =
+    local.getFullYear() === year &&
+    local.getMonth() === month &&
+    local.getDate() === day
+
+  return valid ? local : null
+}
+
+/**
+ * Turn a spreadsheet cell into a local calendar date.
+ * Preferred paths: Date | Excel serial | "YYYY-MM-DD".
+ * Last resort: browser Date parse of other text (less reliable).
+ */
 export function parseCellDate(value: unknown): Date | null {
   if (value == null || value === '') return null
 
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return new Date(value.getFullYear(), value.getMonth(), value.getDate())
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : toLocalCalendarDate(value)
   }
 
   if (typeof value === 'number') {
     return excelSerialToDate(value)
   }
 
-  if (typeof value === 'string') {
-    const trimmed = value.trim()
-    if (!trimmed) return null
+  if (typeof value !== 'string') return null
 
-    if (/^\d+(\.\d+)?$/.test(trimmed)) {
-      return excelSerialToDate(Number(trimmed))
-    }
+  const trimmed = value.trim()
+  if (!trimmed) return null
 
-    // YYYY-MM-DD (and optional time) — parse as local calendar date
-    const iso = trimmed.match(
-      /^(\d{4})-(\d{2})-(\d{2})(?:[T\s].*)?$/,
-    )
-    if (iso) {
-      const year = Number(iso[1])
-      const month = Number(iso[2]) - 1
-      const day = Number(iso[3])
-      const local = new Date(year, month, day)
-      if (
-        local.getFullYear() === year &&
-        local.getMonth() === month &&
-        local.getDate() === day
-      ) {
-        return local
-      }
-    }
-
-    const parsed = new Date(trimmed)
-    if (!Number.isNaN(parsed.getTime())) {
-      return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate())
-    }
+  // Numeric string → treat as Excel serial (common when cells are text-formatted)
+  if (NUMERIC_STRING.test(trimmed)) {
+    return excelSerialToDate(Number(trimmed))
   }
 
-  return null
+  const fromIso = parseIsoDateString(trimmed)
+  if (fromIso) return fromIso
+
+  // Fallback for uncommon text formats (locale-dependent)
+  const parsed = new Date(trimmed)
+  return Number.isNaN(parsed.getTime()) ? null : toLocalCalendarDate(parsed)
 }
 
 function mapHeaders(headers: unknown[]): {
@@ -170,12 +187,10 @@ export async function parseWorkbook(data: ArrayBuffer): Promise<ParseResult> {
     const serviceDate = parseCellDate(row[dateIdx])
     if (!serviceDate) continue
 
-    const managerName = String(row[managerIdx] ?? '').trim()
-
     rows.push({
       employeeName,
       serviceDate,
-      managerName,
+      managerName: String(row[managerIdx] ?? '').trim(),
     })
   }
 
