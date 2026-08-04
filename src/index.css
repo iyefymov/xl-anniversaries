@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", ui-serif, Georgia, serif;
+  --color-ink: #0f1c24;
+  --color-ink-soft: #2a3f4a;
+  --color-slate-mist: #5c7380;
+  --color-paper: #f3f6f7;
+  --color-paper-deep: #e4ecef;
+  --color-teal: #0f6b6d;
+  --color-teal-deep: #0a4f51;
+  --color-teal-soft: #d7ecec;
+  --color-danger: #9b2c2c;
+  --color-danger-soft: #fde8e8;
+}
+
+@layer base {
+  html {
+    color: var(--color-ink);
+    background-color: var(--color-paper);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #d7ecec 0%, transparent 55%),
+      radial-gradient(900px 500px at 95% 5%, #dbe4ea 0%, transparent 50%),
+      linear-gradient(180deg, #f7fafb 0%, var(--color-paper) 40%, #eef3f5 100%);
+    background-attachment: fixed;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes accordion-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out both;
+}
+
+.animate-accordion-in {
+  animation: accordion-in 0.28s ease-out both;
+}
