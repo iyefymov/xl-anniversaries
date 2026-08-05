@@ -7,7 +7,8 @@ export function PrivacyNote({
 }: PrivacyNoteProps) {
   return (
     <p className={className}>
-      Processed entirely in your browser; nothing is uploaded to a server.
+      Processed in your browser and kept on this device until you replace the
+      file. Nothing is uploaded to a server.
     </p>
   )
 }

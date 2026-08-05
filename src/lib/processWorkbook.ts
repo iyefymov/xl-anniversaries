@@ -1,4 +1,8 @@
-import { groupByRollingMonths, type MonthGroup } from './anniversaries'
+import {
+  groupByRollingMonths,
+  type EmployeeRow,
+  type MonthGroup,
+} from './anniversaries'
 import { parseWorkbook } from './parseWorkbook'
 
 export type ProcessSuccess = {
@@ -6,6 +10,7 @@ export type ProcessSuccess = {
   groups: MonthGroup[]
   asOf: Date
   totalPeople: number
+  rows: EmployeeRow[]
 }
 
 export type ProcessFailure = {
@@ -36,6 +41,7 @@ export async function processWorkbook(
       groups: groupByRollingMonths(parsed.rows, asOf),
       asOf,
       totalPeople: parsed.rows.length,
+      rows: parsed.rows,
     }
   } catch {
     return {

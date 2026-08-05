@@ -26,6 +26,10 @@ For each employee:
 
 Results are grouped in a rolling 12-month accordion starting from the current month. Within a month, people are sorted by day of month, then name. The current month is emphasized.
 
+## Persistence
+
+The last successfully uploaded export is remembered in this browser’s `localStorage` so you can refresh or reopen the app without re-uploading. On load, anniversary math is recomputed for today. Uploading a new file replaces the saved data. Nothing is sent to a server.
+
 ## Local development
 
 ```bash
