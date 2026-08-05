@@ -85,6 +85,10 @@
   @apply mt-10 flex cursor-pointer flex-col items-start gap-3 border border-dashed border-slate-mist/40 bg-white/70 px-6 py-8 backdrop-blur-sm transition hover:border-teal hover:bg-teal-soft/40;
 }
 
+.upload-dropzone[data-dragging='true'] {
+  @apply border-teal bg-teal-soft/50;
+}
+
 .upload-dropzone[data-busy='true'] {
   @apply pointer-events-none opacity-70;
 }

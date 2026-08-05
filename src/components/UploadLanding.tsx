@@ -1,3 +1,5 @@
+import { FileDropzone } from './FileDropzone'
+
 type UploadLandingProps = {
   error: string | null
   busy: boolean
@@ -17,29 +19,22 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           by anniversary month.
         </p>
 
-        <label className="upload-dropzone" data-busy={busy || undefined}>
+        <FileDropzone
+          busy={busy}
+          onFile={onFile}
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        >
           <span className="font-serif text-2xl font-semibold text-ink">
             Upload employee export
           </span>
           <span className="text-sm text-slate-mist">
-            Any .xlsx file with Employee Reporting Name, Service Date, and
-            Manager Name columns.
+            Drop a .xlsx file here, or choose one — needs Employee Reporting
+            Name, Service Date, and Manager Name columns.
           </span>
           <span className="mt-2 inline-flex items-center bg-teal px-4 py-2 text-sm font-medium text-white transition hover:bg-teal-deep">
             {busy ? 'Reading file…' : 'Choose file'}
           </span>
-          <input
-            type="file"
-            accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            className="sr-only"
-            disabled={busy}
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) onFile(file)
-              e.target.value = ''
-            }}
-          />
-        </label>
+        </FileDropzone>
 
         {error ? (
           <p
