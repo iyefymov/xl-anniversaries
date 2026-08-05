@@ -1,4 +1,5 @@
-import { formatServiceDate, type Anniversary } from '../lib/anniversaries'
+import { formatServiceDate, pluralize } from '../lib/format'
+import type { Anniversary } from '../lib/anniversaries'
 
 type AnniversaryListProps = {
   anniversaries: Anniversary[]
@@ -36,8 +37,7 @@ export function AnniversaryList({
                 : 'text-sm font-semibold tabular-nums text-ink-soft'
             }
           >
-            {person.upcomingYearsOfService}{' '}
-            {person.upcomingYearsOfService === 1 ? 'year' : 'years'}
+            {pluralize(person.upcomingYearsOfService, 'year')}
           </span>
         </li>
       ))}

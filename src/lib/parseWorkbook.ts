@@ -1,4 +1,5 @@
 import type { EmployeeRow } from './anniversaries'
+import { toLocalCalendarDate } from './dates'
 
 export type ParseSuccess = {
   ok: true
@@ -27,11 +28,6 @@ function normalizeHeader(value: unknown): string {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, ' ')
-}
-
-/** Drop time-of-day; keep Y/M/D as a local calendar date. */
-function toLocalCalendarDate(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }
 
 /**

@@ -1,4 +1,5 @@
 import { FileDropzone } from './FileDropzone'
+import { PrivacyNote } from './PrivacyNote'
 
 type UploadLandingProps = {
   error: string | null
@@ -45,9 +46,7 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           </p>
         ) : null}
 
-        <p className="privacy-note mt-8 max-w-xl">
-          Processed entirely in your browser; nothing is uploaded to a server.
-        </p>
+        <PrivacyNote className="privacy-note mt-8 max-w-xl" />
       </div>
     </main>
   )

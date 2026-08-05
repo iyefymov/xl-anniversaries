@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { groupByRollingMonths, type MonthGroup } from './lib/anniversaries'
-import { parseWorkbook } from './lib/parseWorkbook'
+import type { MonthGroup } from './lib/anniversaries'
+import { processWorkbook } from './lib/processWorkbook'
 import { UploadLanding } from './components/UploadLanding'
 import { ResultsView } from './components/ResultsView'
 
@@ -23,30 +23,19 @@ export default function App() {
   async function handleFile(file: File) {
     setState({ view: 'landing', error: null, busy: true })
 
-    try {
-      const buffer = await file.arrayBuffer()
-      const result = await parseWorkbook(buffer)
+    const result = await processWorkbook(file)
 
-      if (!result.ok) {
-        setState({ view: 'landing', error: result.error, busy: false })
-        return
-      }
-
-      const asOf = new Date()
-      const groups = groupByRollingMonths(result.rows, asOf)
-      setState({
-        view: 'results',
-        groups,
-        asOf,
-        totalPeople: result.rows.length,
-      })
-    } catch {
-      setState({
-        view: 'landing',
-        error: 'Something went wrong while reading the file. Please try again.',
-        busy: false,
-      })
+    if (!result.ok) {
+      setState({ view: 'landing', error: result.error, busy: false })
+      return
     }
+
+    setState({
+      view: 'results',
+      groups: result.groups,
+      asOf: result.asOf,
+      totalPeople: result.totalPeople,
+    })
   }
 
   if (state.view === 'results') {

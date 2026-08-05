@@ -1,5 +1,7 @@
-import { formatReferenceDate, type MonthGroup } from '../lib/anniversaries'
+import { formatReferenceDate, pluralize } from '../lib/format'
+import type { MonthGroup } from '../lib/anniversaries'
 import { MonthAccordion } from './MonthAccordion'
+import { PrivacyNote } from './PrivacyNote'
 
 type ResultsViewProps = {
   groups: MonthGroup[]
@@ -24,7 +26,7 @@ export function ResultsView({
               Upcoming service years
             </h1>
             <p className="mt-3 text-ink-soft">
-              {totalPeople} {totalPeople === 1 ? 'person' : 'people'} · as of{' '}
+              {pluralize(totalPeople, 'person', 'people')} · as of{' '}
               {formatReferenceDate(asOf)}
             </p>
           </div>
@@ -41,9 +43,7 @@ export function ResultsView({
           <MonthAccordion groups={groups} />
         </div>
 
-        <p className="privacy-note mt-10">
-          Processed entirely in your browser; nothing is uploaded to a server.
-        </p>
+        <PrivacyNote className="privacy-note mt-10" />
       </div>
     </main>
   )

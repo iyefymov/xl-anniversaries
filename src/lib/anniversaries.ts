@@ -1,3 +1,5 @@
+import { startOfLocalDay } from './dates'
+
 export type EmployeeRow = {
   employeeName: string
   /** Original hire / service date from the export. */
@@ -9,10 +11,7 @@ export type EmployeeRow = {
  * One person after anniversary math.
  * `serviceDate` is the hire date (month/day of their annual anniversary).
  */
-export type Anniversary = {
-  employeeName: string
-  serviceDate: Date
-  managerName: string
+export type Anniversary = EmployeeRow & {
   upcomingYearsOfService: number
   anniversaryMonth: string
   dayOfMonth: number
@@ -39,10 +38,6 @@ const MONTH_NAMES = [
   'November',
   'December',
 ] as const
-
-export function startOfLocalDay(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-}
 
 /** Build a date on month/day in year; Feb 29 → Feb 28 in non-leap years. */
 export function dateOnMonthDay(
@@ -79,9 +74,7 @@ export function upcomingYearsOfService(serviceDate: Date, asOf: Date): number {
 export function toAnniversary(row: EmployeeRow, asOf: Date): Anniversary {
   const monthIndex = row.serviceDate.getMonth()
   return {
-    employeeName: row.employeeName,
-    serviceDate: row.serviceDate,
-    managerName: row.managerName,
+    ...row,
     upcomingYearsOfService: upcomingYearsOfService(row.serviceDate, asOf),
     anniversaryMonth: MONTH_NAMES[monthIndex],
     dayOfMonth: row.serviceDate.getDate(),
@@ -125,21 +118,5 @@ export function groupByRollingMonths(
   })
 }
 
-/** Display format for service/anniversary dates (e.g. Sep 8, 2025). */
-export function formatServiceDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
-export function formatReferenceDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
 export { MONTH_NAMES }
+export { startOfLocalDay } from './dates'
