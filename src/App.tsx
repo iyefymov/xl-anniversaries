@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import { groupByRollingMonths, type MonthGroup } from './lib/anniversaries'
+import {
+  buildAnniversaryResults,
+  type Anniversary,
+  type MonthGroup,
+} from './lib/anniversaries'
 import { clear, load, save } from './lib/persistedEmployees'
 import { processWorkbook } from './lib/processWorkbook'
 import { UploadLanding } from './components/UploadLanding'
@@ -10,6 +14,7 @@ type AppState =
   | {
       view: 'results'
       groups: MonthGroup[]
+      fifteenYearCohort: Anniversary[]
       asOf: Date
       totalPeople: number
       fileName: string
@@ -23,10 +28,12 @@ function initialState(): AppState {
   }
 
   const asOf = new Date()
+  const results = buildAnniversaryResults(persisted.rows, asOf)
   return {
     view: 'results',
-    groups: groupByRollingMonths(persisted.rows, asOf),
-    asOf,
+    groups: results.groups,
+    fifteenYearCohort: results.fifteenYearCohort,
+    asOf: results.asOf,
     totalPeople: persisted.rows.length,
     fileName: persisted.fileName,
     savedAt: persisted.savedAt,
@@ -52,6 +59,7 @@ export default function App() {
     setState({
       view: 'results',
       groups: result.groups,
+      fifteenYearCohort: result.fifteenYearCohort,
       asOf: result.asOf,
       totalPeople: result.totalPeople,
       fileName: file.name,
@@ -63,6 +71,7 @@ export default function App() {
     return (
       <ResultsView
         groups={state.groups}
+        fifteenYearCohort={state.fifteenYearCohort}
         asOf={state.asOf}
         totalPeople={state.totalPeople}
         fileName={state.fileName}

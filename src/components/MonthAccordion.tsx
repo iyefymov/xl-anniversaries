@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { MonthGroup } from '../lib/anniversaries'
 import { AnniversaryList } from './AnniversaryList'
+import { CollapsibleAnniversaryPanel } from './CollapsibleAnniversaryPanel'
+import { PersonGridHeader } from './PersonGridHeader'
 
 type MonthAccordionProps = {
   groups: MonthGroup[]
@@ -15,70 +17,28 @@ export function MonthAccordion({ groups }: MonthAccordionProps) {
     <div className="space-y-2">
       {groups.map((group) => {
         const isOpen = openMonth === group.month
-        const count = group.anniversaries.length
         const current = group.isCurrentMonth
 
         return (
-          <section
+          <CollapsibleAnniversaryPanel
             key={group.month}
-            className="month-panel"
-            data-current={current || undefined}
+            title={group.month}
+            badge={current ? 'This month' : undefined}
+            count={group.anniversaries.length}
+            isOpen={isOpen}
+            emphasized={current}
+            onToggle={() =>
+              setOpenMonth((currentOpen) =>
+                currentOpen === group.month ? null : group.month,
+              )
+            }
           >
-            <h2>
-              <button
-                type="button"
-                aria-expanded={isOpen}
-                className={
-                  current
-                    ? 'flex w-full items-center justify-between gap-4 px-4 py-3 text-left text-ink transition'
-                    : 'flex w-full items-center justify-between gap-4 px-4 py-3 text-left text-ink-soft transition hover:text-ink'
-                }
-                onClick={() =>
-                  setOpenMonth((currentOpen) =>
-                    currentOpen === group.month ? null : group.month,
-                  )
-                }
-              >
-                <span className="flex items-baseline gap-3">
-                  <span
-                    className={
-                      current
-                        ? 'font-serif text-2xl font-semibold'
-                        : 'font-serif text-xl font-medium'
-                    }
-                  >
-                    {group.month}
-                  </span>
-                  {current ? (
-                    <span className="text-xs font-medium tracking-[0.12em] text-teal uppercase">
-                      This month
-                    </span>
-                  ) : null}
-                </span>
-                <span
-                  className="month-count"
-                  data-current={current || undefined}
-                >
-                  {count}
-                </span>
-              </button>
-            </h2>
-
-            {isOpen ? (
-              <div className="animate-accordion-in border-t border-paper-deep px-4 py-2">
-                <div className="person-grid-header">
-                  <span>Employee</span>
-                  <span>Anniversary date</span>
-                  <span>Manager</span>
-                  <span className="text-right">Years</span>
-                </div>
-                <AnniversaryList
-                  anniversaries={group.anniversaries}
-                  emphasized={current}
-                />
-              </div>
-            ) : null}
-          </section>
+            <PersonGridHeader />
+            <AnniversaryList
+              anniversaries={group.anniversaries}
+              emphasized={current}
+            />
+          </CollapsibleAnniversaryPanel>
         )
       })}
     </div>

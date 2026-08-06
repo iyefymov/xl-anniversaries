@@ -4,17 +4,20 @@ import type { Anniversary } from '../lib/anniversaries'
 type AnniversaryListProps = {
   anniversaries: Anniversary[]
   emphasized?: boolean
+  /** Overrides years column; defaults to truthful upcoming years of service. */
+  yearsShown?: (anniversary: Anniversary) => number
+  emptyMessage?: string
 }
 
 export function AnniversaryList({
   anniversaries,
   emphasized = false,
+  yearsShown = (a) => a.upcomingYearsOfService,
+  emptyMessage = 'No anniversaries this month.',
 }: AnniversaryListProps) {
   if (anniversaries.length === 0) {
     return (
-      <p className="px-1 py-3 text-sm text-slate-mist">
-        No anniversaries this month.
-      </p>
+      <p className="px-1 py-3 text-sm text-slate-mist">{emptyMessage}</p>
     )
   }
 
@@ -37,7 +40,7 @@ export function AnniversaryList({
                 : 'text-sm font-semibold tabular-nums text-ink-soft'
             }
           >
-            {pluralize(person.upcomingYearsOfService, 'year')}
+            {pluralize(yearsShown(person), 'year')}
           </span>
         </li>
       ))}

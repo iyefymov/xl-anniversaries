@@ -1,10 +1,16 @@
 import { formatReferenceDate, pluralize } from '../lib/format'
-import type { MonthGroup } from '../lib/anniversaries'
+import {
+  FIFTEEN_YEAR_MILESTONE,
+  type Anniversary,
+  type MonthGroup,
+} from '../lib/anniversaries'
+import { MilestoneCohortSection } from './MilestoneCohortSection'
 import { MonthAccordion } from './MonthAccordion'
 import { PrivacyNote } from './PrivacyNote'
 
 type ResultsViewProps = {
   groups: MonthGroup[]
+  fifteenYearCohort: Anniversary[]
   asOf: Date
   totalPeople: number
   fileName: string
@@ -15,6 +21,7 @@ type ResultsViewProps = {
 
 export function ResultsView({
   groups,
+  fifteenYearCohort,
   asOf,
   totalPeople,
   fileName,
@@ -57,7 +64,12 @@ export function ResultsView({
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 space-y-6">
+          <MilestoneCohortSection
+            anniversaries={fifteenYearCohort}
+            milestoneYears={FIFTEEN_YEAR_MILESTONE}
+            calendarYear={asOf.getFullYear()}
+          />
           <MonthAccordion groups={groups} />
         </div>
 

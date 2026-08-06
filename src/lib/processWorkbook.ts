@@ -1,5 +1,6 @@
 import {
-  groupByRollingMonths,
+  buildAnniversaryResults,
+  type Anniversary,
   type EmployeeRow,
   type MonthGroup,
 } from './anniversaries'
@@ -8,6 +9,7 @@ import { parseWorkbook } from './parseWorkbook'
 export type ProcessSuccess = {
   ok: true
   groups: MonthGroup[]
+  fifteenYearCohort: Anniversary[]
   asOf: Date
   totalPeople: number
   rows: EmployeeRow[]
@@ -21,7 +23,7 @@ export type ProcessFailure = {
 export type ProcessResult = ProcessSuccess | ProcessFailure
 
 /**
- * Parse an employee export and build the rolling month-group view.
+ * Parse an employee export and build anniversary results (months + cohort).
  * UI only needs to drive this and reflect the result in state.
  */
 export async function processWorkbook(
@@ -36,10 +38,13 @@ export async function processWorkbook(
       return parsed
     }
 
+    const results = buildAnniversaryResults(parsed.rows, asOf)
+
     return {
       ok: true,
-      groups: groupByRollingMonths(parsed.rows, asOf),
-      asOf,
+      groups: results.groups,
+      fifteenYearCohort: results.fifteenYearCohort,
+      asOf: results.asOf,
       totalPeople: parsed.rows.length,
       rows: parsed.rows,
     }
