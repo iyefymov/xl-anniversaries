@@ -4,7 +4,7 @@ import type { Anniversary } from '../lib/anniversaries'
 type AnniversaryListProps = {
   anniversaries: Anniversary[]
   emphasized?: boolean
-  /** Overrides years column; defaults to truthful upcoming years of service. */
+  /** Overrides years column; defaults to years of service for this calendar year. */
   yearsShown?: (anniversary: Anniversary) => number
   emptyMessage?: string
 }
@@ -12,7 +12,7 @@ type AnniversaryListProps = {
 export function AnniversaryList({
   anniversaries,
   emphasized = false,
-  yearsShown = (a) => a.upcomingYearsOfService,
+  yearsShown = (a) => a.yearsOfServiceThisYear,
   emptyMessage = 'No anniversaries this month.',
 }: AnniversaryListProps) {
   if (anniversaries.length === 0) {

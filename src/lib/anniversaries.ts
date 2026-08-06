@@ -1,5 +1,3 @@
-import { startOfLocalDay } from './dates'
-
 export type EmployeeRow = {
   employeeName: string
   /** Original hire / service date from the export. */
@@ -12,7 +10,7 @@ export type EmployeeRow = {
  * `serviceDate` is the hire date (month/day of their annual anniversary).
  */
 export type Anniversary = EmployeeRow & {
-  upcomingYearsOfService: number
+  yearsOfServiceThisYear: number
   anniversaryMonth: string
   dayOfMonth: number
 }
@@ -64,35 +62,29 @@ export function dateOnMonthDay(
 }
 
 /**
- * Full years of service on the next anniversary on or after `asOf`.
- * Years = anniversaryYear − serviceYear.
+ * Years of service for the anniversary falling in the as-of calendar year.
+ * Years = asOfYear − hireYear (same before and after anniversary day).
  */
-export function upcomingYearsOfService(serviceDate: Date, asOf: Date): number {
-  const today = startOfLocalDay(asOf)
-  const month = serviceDate.getMonth()
-  const day = serviceDate.getDate()
-
-  let nextAnniversary = dateOnMonthDay(today.getFullYear(), month, day)
-  if (nextAnniversary < today) {
-    nextAnniversary = dateOnMonthDay(today.getFullYear() + 1, month, day)
-  }
-
-  return nextAnniversary.getFullYear() - serviceDate.getFullYear()
+export function yearsOfServiceThisYear(
+  serviceDate: Date,
+  asOf: Date,
+): number {
+  return asOf.getFullYear() - serviceDate.getFullYear()
 }
 
 export function toAnniversary(row: EmployeeRow, asOf: Date): Anniversary {
   const monthIndex = row.serviceDate.getMonth()
   return {
     ...row,
-    upcomingYearsOfService: upcomingYearsOfService(row.serviceDate, asOf),
+    yearsOfServiceThisYear: yearsOfServiceThisYear(row.serviceDate, asOf),
     anniversaryMonth: MONTH_NAMES[monthIndex],
     dayOfMonth: row.serviceDate.getDate(),
   }
 }
 
-export function rollingMonthOrder(asOf: Date): number[] {
-  const start = asOf.getMonth()
-  return Array.from({ length: 12 }, (_, i) => (start + i) % 12)
+/** Calendar year month indices: January (0) through December (11). */
+export function calendarMonthOrder(): number[] {
+  return Array.from({ length: 12 }, (_, i) => i)
 }
 
 function compareNames(a: Anniversary, b: Anniversary): number {
@@ -135,7 +127,7 @@ export function isCalendarYearMilestone(
 
 /**
  * People whose N-year anniversary lands in the as-of calendar year.
- * Leaves `upcomingYearsOfService` truthful (may be N+1 after the date passes).
+ * `yearsOfServiceThisYear` stays N through Dec 31.
  */
 export function calendarYearMilestoneCohort(
   rows: EmployeeRow[],
@@ -148,12 +140,13 @@ export function calendarYearMilestoneCohort(
     .sort(compareAnniversariesByCalendarDate)
 }
 
-export function groupByRollingMonths(
+/** Group people by anniversary month for the as-of calendar year (Jan–Dec). */
+export function groupByCalendarMonths(
   rows: EmployeeRow[],
   asOf: Date = new Date(),
 ): MonthGroup[] {
   const anniversaries = rows.map((row) => toAnniversary(row, asOf))
-  const order = rollingMonthOrder(asOf)
+  const order = calendarMonthOrder()
   const currentMonth = asOf.getMonth()
 
   return order.map((monthIndex) => {
@@ -177,7 +170,7 @@ export function buildAnniversaryResults(
   asOf: Date = new Date(),
 ): AnniversaryResults {
   return {
-    groups: groupByRollingMonths(rows, asOf),
+    groups: groupByCalendarMonths(rows, asOf),
     fifteenYearCohort: calendarYearMilestoneCohort(
       rows,
       asOf,

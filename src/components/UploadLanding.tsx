@@ -16,8 +16,8 @@ export function UploadLanding({ error, busy, onFile }: UploadLandingProps) {
           Work Anniversaries
         </h1>
         <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
-          Upload your employee export to see upcoming years of service, grouped
-          by anniversary month.
+          Upload your employee export to see service anniversaries for the
+          calendar year, grouped by month from January through December.
         </p>
 
         <FileDropzone

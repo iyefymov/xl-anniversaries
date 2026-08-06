@@ -36,7 +36,7 @@ export function ResultsView({
           <div>
             <p className="eyebrow">Work Anniversaries</p>
             <h1 className="font-serif text-4xl font-semibold text-ink sm:text-5xl">
-              Upcoming service years
+              Service anniversaries in {asOf.getFullYear()}
             </h1>
             <p className="mt-3 text-ink-soft">
               {pluralize(totalPeople, 'person', 'people')} · as of{' '}
