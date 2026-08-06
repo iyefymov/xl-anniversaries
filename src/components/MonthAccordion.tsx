@@ -26,7 +26,7 @@ export function MonthAccordion({ groups }: MonthAccordionProps) {
             badge={current ? 'This month' : undefined}
             count={group.anniversaries.length}
             isOpen={isOpen}
-            emphasized={current}
+            emphasized={isOpen}
             onToggle={() =>
               setOpenMonth((currentOpen) =>
                 currentOpen === group.month ? null : group.month,
@@ -36,7 +36,7 @@ export function MonthAccordion({ groups }: MonthAccordionProps) {
             <PersonGridHeader />
             <AnniversaryList
               anniversaries={group.anniversaries}
-              emphasized={current}
+              emphasized={isOpen}
             />
           </CollapsibleAnniversaryPanel>
         )
